@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">GameVault</string>
+
+    <string name="explore">Explore</string>
+    <string name="search">Search</string>
+
+    <!-- Http Codes -->
+    <string name="error_bad_request">Bad request</string>
+    <string name="error_unauthorized">Authorization required</string>
+    <string name="error_forbidden">Access denied</string>
+    <string name="error_not_found">Resource not found</string>
+    <string name="error_too_many_requests">Too many requests. Try again later</string>
+    <string name="error_client">Client error: %s</string>
+    <string name="error_server">Server error: %s</string>
+    <string name="error_http_unknown">HTTP error: %s</string>
+
+    <string name="unknown_error">Unknown error</string>
+    <string name="error_header">🎮 Oh!</string>
+</resources>
