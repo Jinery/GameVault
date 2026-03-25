@@ -15,6 +15,8 @@ object RetrofitClient {
 
     val json: Json = Json {
         ignoreUnknownKeys = true
+        coerceInputValues = true
+        isLenient = true
     }
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()

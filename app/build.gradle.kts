@@ -87,6 +87,9 @@ dependencies {
     // Serialization
     implementation(libs.kotlinx.serialization.json)
 
+    // DateTime
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

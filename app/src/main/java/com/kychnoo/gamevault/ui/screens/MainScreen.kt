@@ -1,5 +1,10 @@
 package com.kychnoo.gamevault.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +17,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,39 +30,65 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kychnoo.gamevault.R
 import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.data.model.ui.UiState
+import com.kychnoo.gamevault.ui.theme.GameVaultTheme
 import com.kychnoo.gamevault.ui.viewModel.MainViewModel
 import com.kychnoo.gamevault.ui.widgets.GameCard
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
-object MainScreenRoute;
+object MainScreenRoute
 
 @Composable
 fun MainScreen(
-    onDetailClick: (Int) -> Unit,
+    onDetailClick: (GameData) -> Unit,
     innerPadding: PaddingValues,
-    modifier: Modifier = Modifier
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    modifier: Modifier = Modifier,
+    viewModel: MainViewModel = koinViewModel()
 ) {
-    val viewModel: MainViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    MainScreenContent(
+        uiState = uiState,
+        onDetailClick = onDetailClick,
+        innerPadding = innerPadding,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope,
+        onRetry = { viewModel.loadGames() },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun MainScreenContent(
+    uiState: UiState<List<GameData>>,
+    onDetailClick: (GameData) -> Unit,
+    innerPadding: PaddingValues,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        when (val state = uiState) {
+        when (uiState) {
             is UiState.Loading -> CircularProgressIndicator()
 
             is UiState.Success -> GamesGrid(
-                games = state.data,
+                games = uiState.data,
                 innerPadding = innerPadding,
-                onDetailClick = onDetailClick
+                onDetailClick = onDetailClick,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope
             )
 
             is UiState.Error -> ErrorMessage(
-                message = state.message,
-                onRetry = { viewModel.loadGames() }
+                message = uiState.message,
+                onRetry = onRetry
             )
         }
     }
@@ -68,7 +98,9 @@ fun MainScreen(
 private fun GamesGrid(
     games: List<GameData>,
     innerPadding: PaddingValues,
-    onDetailClick: (Int) -> Unit,
+    onDetailClick: (GameData) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
@@ -89,7 +121,9 @@ private fun GamesGrid(
         ) { game ->
             GameCard(
                 gameData = game,
-                onCardClick = { onDetailClick(game.id) }
+                onCardClick = { onDetailClick(game) },
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope
             )
         }
     }
@@ -116,18 +150,34 @@ private fun ErrorMessage(
             textAlign = TextAlign.Center
         )
         Button(onClick = onRetry) {
-            Text("Повторить")
+            Text(stringResource(R.string.retry))
         }
     }
 }
 
-@Preview
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(showBackground = true)
 @Composable
-fun MainScreenPreview() {
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        MainScreen(
-            onDetailClick = {  },
-            innerPadding = innerPadding
-        )
+private fun MainScreenPreview() {
+    val sampleGames = listOf(
+        GameData(1, "The Witcher 3: Wild Hunt", "", 92, 4.8f),
+        GameData(2, "Red Dead Redemption 2", "", 97, 4.9f),
+        GameData(3, "God of War", "", 94, 4.7f),
+        GameData(4, "Cyberpunk 2077", "", 86, 4.1f)
+    )
+
+    GameVaultTheme {
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                MainScreenContent(
+                    uiState = UiState.Success(sampleGames),
+                    onDetailClick = {},
+                    innerPadding = PaddingValues(0.dp),
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this@AnimatedVisibility,
+                    onRetry = {}
+                )
+            }
+        }
     }
 }

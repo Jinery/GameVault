@@ -16,4 +16,7 @@
 
     <string name="unknown_error">Unknown error</string>
     <string name="error_header">🎮 Oh!</string>
+    <string name="unexpected_state">Unexpected state</string>
+
+    <string name="retry">Retry</string>
 </resources>
