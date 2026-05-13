@@ -5,6 +5,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +38,8 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.ui.theme.cardColor
+import com.kychnoo.gamevault.ui.widgets.platform.PlatformsRow
+import kotlinx.coroutines.delay
 
 @Composable
 fun GameCard(
@@ -43,16 +47,28 @@ fun GameCard(
     onCardClick: (Int) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cardIndex: Int = 0
 ) {
-    var visible by remember { mutableStateOf(false) }
+    var visible by rememberSaveable() { mutableStateOf(false) }
     val scale by animateFloatAsState(
         targetValue = if (visible) 1f else 0.8f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "CardScale"
     )
-    val alpha by animateFloatAsState(targetValue = if (visible) 1f else 0f)
+    val alpha by animateFloatAsState(
+        targetValue = if (visible) 1f else 0f,
+        animationSpec = tween(durationMillis = 300),
+        label = "CardAlpha"
+    )
 
-    LaunchedEffect(Unit) { visible = true }
+    LaunchedEffect(Unit) {
+        delay((cardIndex * 50L).coerceAtMost(300L))
+        visible = true
+    }
 
     Card(
         shape = RoundedCornerShape(24.dp),
@@ -101,12 +117,7 @@ fun GameCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text (
-                        text = "PS5 • PC • XB",
-                        color = Color.Gray,
-                        fontSize = 12.sp
-                    )
-
+                    PlatformsRow(gameData.platforms)
                     RatingBadge(gameData.score)
                 }
 

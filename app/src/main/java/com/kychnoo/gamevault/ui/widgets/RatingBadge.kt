@@ -28,7 +28,7 @@ fun RatingBadge(score: Int, modifier: Modifier = Modifier) {
     Surface(
         color = backgroundColor.copy(alpha = 0.1f),
         shape = RoundedCornerShape(4.dp),
-        border = BorderStroke(0.3.dp, backgroundColor),
+        border = BorderStroke(0.4.dp, backgroundColor),
         modifier = modifier
     ) {
         Text(
@@ -37,8 +37,8 @@ fun RatingBadge(score: Int, modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
             modifier = Modifier.padding(
-                horizontal = 6.dp,
-                vertical = 2.dp
+                horizontal = 5.dp,
+                vertical = 1.dp
             )
         )
     }

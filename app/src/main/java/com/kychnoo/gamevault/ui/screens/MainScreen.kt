@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kychnoo.gamevault.R
 import com.kychnoo.gamevault.data.model.GameData
+import com.kychnoo.gamevault.data.model.platform.PlatformArData
 import com.kychnoo.gamevault.data.model.ui.UiState
 import com.kychnoo.gamevault.ui.theme.GameVaultTheme
 import com.kychnoo.gamevault.ui.viewModel.MainViewModel
@@ -115,15 +117,16 @@ private fun GamesGrid(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        items(
+        itemsIndexed(
             items = games,
-            key = { it.id }
-        ) { game ->
+            key = { _, game -> game.id }
+        ) { index, game ->
             GameCard(
                 gameData = game,
                 onCardClick = { onDetailClick(game) },
                 sharedTransitionScope = sharedTransitionScope,
-                animatedVisibilityScope = animatedVisibilityScope
+                animatedVisibilityScope = animatedVisibilityScope,
+                cardIndex = index
             )
         }
     }
@@ -160,10 +163,13 @@ private fun ErrorMessage(
 @Composable
 private fun MainScreenPreview() {
     val sampleGames = listOf(
-        GameData(1, "The Witcher 3: Wild Hunt", "", 92, 4.8f),
-        GameData(2, "Red Dead Redemption 2", "", 97, 4.9f),
-        GameData(3, "God of War", "", 94, 4.7f),
-        GameData(4, "Cyberpunk 2077", "", 86, 4.1f)
+        GameData(1, "The Witcher 3: Wild Hunt", "", 92, 4.8f, listOf(PlatformArData.playStation())),
+        GameData(2, "Red Dead Redemption 2", "", 97, 4.9f, listOf(PlatformArData.playStation())),
+        GameData(3, "God of War", "", 94, 4.7f, listOf(PlatformArData.playStation())),
+        GameData(4, "Cyberpunk 2077", "", 86, 4.1f, listOf(
+            PlatformArData.playStation(),
+            PlatformArData.xbox()
+        ))
     )
 
     GameVaultTheme {

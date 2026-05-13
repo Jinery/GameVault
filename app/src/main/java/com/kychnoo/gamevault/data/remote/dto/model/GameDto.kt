@@ -9,7 +9,8 @@ data class GameDto(
     val name: String,
     val background_image: String,
     val rating: Float,
-    val metacritic: Int
+    val metacritic: Int,
+    val platforms: List<PlatformArDto>
 )
 
 fun  GameDto.toGameData() = GameData(
@@ -18,5 +19,6 @@ fun  GameDto.toGameData() = GameData(
     imageUrl = this.background_image,
     score = this.metacritic,
     rating = this.rating,
+    platforms = this.platforms.toData(),
     isFavorite = false
 )

@@ -8,8 +8,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PlatformArDto(
     val platform: PlatformDto,
-    val released_at: String?,
-    val requirements: RequirementsDto?
+    val released_at: String? = null,
+    val requirements: RequirementsDto? = null
 
 ) : DtoMapper<PlatformArData> {
     override fun toData(): PlatformArData = PlatformArData(

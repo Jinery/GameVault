@@ -19,4 +19,7 @@
     <string name="unexpected_state">Unexpected state</string>
 
     <string name="retry">Retry</string>
+    
+    <!-- Game Detail Screen -->
+    <string name="about_this_game">About this game</string>
 </resources>
