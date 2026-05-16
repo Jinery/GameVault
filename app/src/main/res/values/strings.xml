@@ -22,4 +22,8 @@
     
     <!-- Game Detail Screen -->
     <string name="about_this_game">About this game</string>
+
+    <!-- Game Details Description Widget -->
+    <string name="show_description">Show</string>
+    <string name="hide_description">Hide</string>
 </resources>

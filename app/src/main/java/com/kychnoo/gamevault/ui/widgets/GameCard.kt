@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -28,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -50,13 +52,15 @@ fun GameCard(
     modifier: Modifier = Modifier,
     cardIndex: Int = 0
 ) {
-    var visible by rememberSaveable() { mutableStateOf(false) }
+    val shouldAnimate = cardIndex < 8
+
+    var visible by rememberSaveable() { mutableStateOf(!shouldAnimate) }
     val scale by animateFloatAsState(
         targetValue = if (visible) 1f else 0.8f,
-        animationSpec = spring(
+        animationSpec = if (shouldAnimate) spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
-        ),
+        ) else snap(),
         label = "CardScale"
     )
     val alpha by animateFloatAsState(
@@ -65,9 +69,11 @@ fun GameCard(
         label = "CardAlpha"
     )
 
-    LaunchedEffect(Unit) {
-        delay((cardIndex * 50L).coerceAtMost(300L))
-        visible = true
+    if (shouldAnimate) {
+        LaunchedEffect(Unit) {
+            delay((cardIndex * 50L).coerceAtMost(300L))
+            visible = true
+        }
     }
 
     Card(
@@ -96,9 +102,13 @@ fun GameCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1.5f)
+                        .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                         .sharedElement(
                             sharedContentState = rememberSharedContentState(key = "image-${gameData.id}"),
-                            animatedVisibilityScope = animatedVisibilityScope
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            clipInOverlayDuringTransition = OverlayClip(
+                                RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                            )
                         ),
                     contentScale = ContentScale.Crop
                 )

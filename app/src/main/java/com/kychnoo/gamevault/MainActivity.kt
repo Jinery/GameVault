@@ -76,7 +76,8 @@ class MainActivity : ComponentActivity() {
                                     id = route.id,
                                     imageUrl = route.imageUrl,
                                     sharedTransitionScope = this@SharedTransitionLayout,
-                                    animatedVisibilityScope = this@composable
+                                    animatedVisibilityScope = this@composable,
+                                    onBackClick = { navController.navigateUp() }
                                 )
                             }
                         }
