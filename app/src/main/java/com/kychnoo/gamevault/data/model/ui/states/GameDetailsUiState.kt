@@ -1,0 +1,10 @@
+package com.kychnoo.gamevault.data.model.ui.states
+
+import com.kychnoo.gamevault.data.model.gameDetail.GameDetailData
+import com.kychnoo.gamevault.data.model.screenshots.ScreenshotData
+import com.kychnoo.gamevault.data.model.ui.UiState
+
+data class GameDetailsUiState(
+    val gameDetailsState: UiState<GameDetailData> = UiState.Loading, // State for game details.
+    val screenshotsState: UiState<ScreenshotData> = UiState.Loading, // State for screenshots for selected game.
+)

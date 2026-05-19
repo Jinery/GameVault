@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -65,39 +67,47 @@ fun GameDescriptionWidget(descriptionText: String, modifier: Modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(2.dp),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onBackground)
+        border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.primary),
+        colors = CardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContentColor = MaterialTheme.colorScheme.onSurface,
+        )
     ) {
-        // Container with gradient for description text.
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(6.dp)
-                .animateContentSize(animationSpec = spring(stiffness = Spring.StiffnessMediumLow))
-                .then(
-                    if (!isShow) { // Draw gradient if the card is not expanded.
-                        Modifier.drawWithContent {
-                            drawContent()
+        Column {
+            val gradientEndColor = MaterialTheme.colorScheme.surface
+            // Container with gradient for description text.
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(6.dp)
+                    .animateContentSize(animationSpec = spring(stiffness = Spring.StiffnessMediumLow))
+                    .then(
+                        if (!isShow) { // Draw gradient if the card is not expanded.
+                            Modifier.drawWithContent {
+                                drawContent()
 
-                            drawRect(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(Color.Transparent, Color.Gray),
-                                    // 2% of box for text height.
-                                    startY = size.height * 0.2f,
-                                    endY = size.height
-                                ),
-                                blendMode = BlendMode.DstOut // Cut alpha around gradient.
-                            )
+                                drawRect(
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(Color.Transparent, gradientEndColor),
+                                        // 20% of box for text height.
+                                        startY = size.height * 0.2f,
+                                        endY = size.height
+                                    )
+                                )
+                            }
                         }
-                    }
-                    else Modifier
+                        else Modifier
+                    )
+            ) {
+                Text(
+                    text = AnnotatedString.fromHtml(descriptionText),
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = if (isShow) Int.MAX_VALUE else 4,
+                    overflow = TextOverflow.Clip
                 )
-        ) {
-            Text(
-                text = AnnotatedString.fromHtml(descriptionText),
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = if (isShow) Int.MAX_VALUE else 4,
-                overflow = TextOverflow.Clip
-            )
+            }
         }
 
         // Down panel.

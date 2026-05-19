@@ -26,4 +26,7 @@
     <!-- Game Details Description Widget -->
     <string name="show_description">Show</string>
     <string name="hide_description">Hide</string>
+
+    <!-- Game Details Screenshots Widget. -->
+    <string name="screenshots_title">Screenshots</string>
 </resources>
