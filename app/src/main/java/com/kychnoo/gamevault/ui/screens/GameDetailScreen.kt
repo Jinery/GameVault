@@ -58,6 +58,7 @@ import com.kychnoo.gamevault.data.model.ui.states.GameDetailsUiState
 import com.kychnoo.gamevault.ui.viewModel.GameDetailViewModel
 import com.kychnoo.gamevault.ui.widgets.SharedImageOverlayContainer
 import com.kychnoo.gamevault.ui.widgets.details.GameDescriptionWidget
+import com.kychnoo.gamevault.ui.widgets.platform.PlatformDetailsRow
 import com.kychnoo.gamevault.ui.widgets.screenshots.ScreenshotsRow
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -277,6 +278,9 @@ private fun GameDetailScreenContent(
                                     onRetryClick = onRetryLoadScreenshots,
                                     onSelectImage = onSelectDetailImage,
                                 )
+                                Spacer(Modifier.height(5.dp))
+                                PlatformDetailsRow(gameDetailData.platforms)
+                                Spacer(Modifier.height(20.dp))
                             }
                         }
                         is UiState.Error -> {

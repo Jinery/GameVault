@@ -29,4 +29,11 @@
 
     <!-- Game Details Screenshots Widget. -->
     <string name="screenshots_title">Screenshots</string>
+    
+    <!-- Platform Details Row. -->
+    <string name="platforms_and_requirements_title">Devices and system requirements</string>
+    <string name="min_requirements_not_specified">Minimum system requirements are not specified</string>
+    <string name="recom_requirements_not_specified">Recommended system requirements are not specified</string>
+    <string name="dont_have_requirements">😔 Oops, we don\'t have requirements for %s</string>
+    <string name="supported_consoles">Supported %1s consoles:\n%2s</string>
 </resources>

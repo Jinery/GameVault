@@ -24,6 +24,8 @@ import com.kychnoo.gamevault.ui.screens.GameDetail
 import com.kychnoo.gamevault.ui.screens.GameDetailScreen
 import com.kychnoo.gamevault.ui.screens.MainScreen
 import com.kychnoo.gamevault.ui.screens.MainScreenRoute
+import com.kychnoo.gamevault.ui.screens.SearchScreen
+import com.kychnoo.gamevault.ui.screens.SearchScreenRoute
 import com.kychnoo.gamevault.ui.theme.GameVaultTheme
 import com.kychnoo.gamevault.ui.widgets.bottom.BottomBar
 
@@ -78,6 +80,9 @@ class MainActivity : ComponentActivity() {
                                     animatedVisibilityScope = this@composable,
                                     onBackClick = { navController.navigateUp() }
                                 )
+                            }
+                            composable<SearchScreenRoute> {
+                                SearchScreen()
                             }
                         }
                     }

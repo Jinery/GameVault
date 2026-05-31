@@ -13,6 +13,7 @@ import com.kychnoo.gamevault.R
 import com.kychnoo.gamevault.data.model.platform.PlatformArData
 import com.kychnoo.gamevault.data.model.platform.Platform
 import com.kychnoo.gamevault.data.model.platform.PlatformFamily
+import com.kychnoo.gamevault.data.model.platform.toFamily
 
 @Composable
 fun PlatformsRow(
@@ -25,8 +26,9 @@ fun PlatformsRow(
         modifier = modifier.padding(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        rawPlatforms.mapNotNull { Platform.fromId(it.id)?.family }
-            .toSet()
+        platforms.mapNotNull { it.platform.toFamily() }
+            .distinct()
+            .sortedBy { it.ordinal }
             .forEach { platformFamily -> SetIcon(platformFamily) }
     }
 }
@@ -38,7 +40,6 @@ fun SetIcon(platformFamily: PlatformFamily) {
             PlatformFamily.XBOX -> R.drawable.ic_xbox
             PlatformFamily.PLAYSTATION -> R.drawable.ic_play_station
             PlatformFamily.PC -> R.drawable.ic_desktop
-            null -> return
         }),
         contentDescription = null,
         modifier = Modifier.size(24.dp).padding(2.dp)
