@@ -1,7 +1,12 @@
 package com.kychnoo.gamevault.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,7 +37,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -60,6 +68,7 @@ import com.kychnoo.gamevault.ui.widgets.SharedImageOverlayContainer
 import com.kychnoo.gamevault.ui.widgets.details.GameDescriptionWidget
 import com.kychnoo.gamevault.ui.widgets.platform.PlatformDetailsRow
 import com.kychnoo.gamevault.ui.widgets.screenshots.ScreenshotsRow
+import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -133,6 +142,13 @@ private fun GameDetailScreenContent(
         }
     }
 
+    var contentVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(gameDetailState) {
+        if (gameDetailState is UiState.Success && !contentVisible) {
+            contentVisible = true
+        }
+    }
+
     with(sharedTransitionScope) {
         Box(modifier = Modifier.fillMaxSize()) {
             /*  Background image with parallax effect.  */
@@ -158,7 +174,7 @@ private fun GameDetailScreenContent(
             Image(
                 painter = painterResource(R.drawable.ic_back),
                 contentDescription = "back_button",
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+                colorFilter = ColorFilter.tint(Color.White),
                 modifier = Modifier
                     .statusBarsPadding()
                     .padding(start = 16.dp, top = 16.dp)
@@ -224,6 +240,7 @@ private fun GameDetailScreenContent(
                     ) {
                         AsyncImage(
                             model = imageUrl,
+                            placeholder = painterResource(R.drawable.game_card_placeholder),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
@@ -254,32 +271,60 @@ private fun GameDetailScreenContent(
                                     .padding(top = 50.dp)
                                     .fillMaxWidth()
                             ) {
-                                Text(
-                                    text = gameDetailData.name,
-                                    style = MaterialTheme.typography.headlineLarge,
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
+                                AnimatedVisibility(
+                                    visible = contentVisible,
+                                    enter = fadeIn(tween(300)) + slideInVertically(
+                                        initialOffsetY = { it / 4 },
+                                        animationSpec = tween(300, delayMillis = 100)
+                                    )
+                                ) {
+                                    Text(
+                                        text = gameDetailData.name,
+                                        style = MaterialTheme.typography.headlineLarge,
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
                                 Spacer(Modifier.height(20.dp))
-                                Text(
-                                    text = stringResource(R.string.about_this_game),
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
+                                AnimatedVisibility(
+                                    visible = contentVisible,
+                                    enter = fadeIn(tween(300, delayMillis = 200)) +
+                                            slideInVertically(
+                                                initialOffsetY = { it / 4 },
+                                                animationSpec = tween(300, delayMillis = 200)
+                                            )
+                                ) {
+                                    Column(modifier = Modifier.animateContentSize()) {
+                                        Text(
+                                            text = stringResource(R.string.about_this_game),
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            modifier = Modifier.padding(horizontal = 16.dp)
+                                        )
+                                        Spacer(Modifier.height(5.dp))
+                                        GameDescriptionWidget(
+                                            descriptionText = gameDetailData.description,
+                                            modifier = Modifier.padding(horizontal = 16.dp)
+                                        )
+                                    }
+                                }
                                 Spacer(Modifier.height(5.dp))
-                                GameDescriptionWidget(
-                                    descriptionText = gameDetailData.description,
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
+                                AnimatedVisibility(
+                                    visible = contentVisible,
+                                    enter = fadeIn(tween(300, delayMillis = 300))
+                                ) {
+                                    ScreenshotsRow(
+                                        screenshotsState = uiState.screenshotsState,
+                                        sharedTransitionScope = sharedTransitionScope,
+                                        animatedVisibilityScope = animatedVisibilityScope,
+                                        onRetryClick = onRetryLoadScreenshots,
+                                        onSelectImage = onSelectDetailImage,
+                                    )
+                                }
                                 Spacer(Modifier.height(5.dp))
-                                ScreenshotsRow(
-                                    screenshotsState = uiState.screenshotsState,
-                                    sharedTransitionScope = sharedTransitionScope,
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    onRetryClick = onRetryLoadScreenshots,
-                                    onSelectImage = onSelectDetailImage,
-                                )
-                                Spacer(Modifier.height(5.dp))
-                                PlatformDetailsRow(gameDetailData.platforms)
+                                AnimatedVisibility(
+                                    visible = contentVisible,
+                                ) {
+                                    PlatformDetailsRow(gameDetailData.platforms)
+                                }
                                 Spacer(Modifier.height(20.dp))
                             }
                         }
@@ -321,7 +366,7 @@ private fun GameDetailScreenContent(
                                 contentDescription = "back_button",
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
                                 modifier = Modifier
-                                    .size(38.dp)
+                                    .size(32.dp)
                                     .padding(4.dp)
                                     .clickable(
                                         enabled = toolbarAlpha > 0f,
@@ -333,6 +378,7 @@ private fun GameDetailScreenContent(
 
                             AsyncImage(
                                 model = imageUrl,
+                                placeholder = painterResource(R.drawable.game_card_placeholder),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(44.dp)

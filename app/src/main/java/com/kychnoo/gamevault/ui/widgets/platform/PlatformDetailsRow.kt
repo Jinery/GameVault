@@ -1,12 +1,16 @@
 package com.kychnoo.gamevault.ui.widgets.platform
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
@@ -34,7 +38,9 @@ import com.kychnoo.gamevault.data.model.platform.toFamily
 import kotlinx.coroutines.launch
 
 @Composable
-fun PlatformDetailsRow(platforms: List<PlatformArData>, modifier: Modifier = Modifier) {
+fun PlatformDetailsRow(
+    platforms: List<PlatformArData>,
+    modifier: Modifier = Modifier) {
     // Extract unique platform families and sort by enum order for stable UI.
     val platformFamilies = remember(platforms) {
         platforms.mapNotNull { it.platform.toFamily() }.distinct().sortedBy { it.ordinal }
@@ -95,7 +101,14 @@ fun PlatformDetailsRow(platforms: List<PlatformArData>, modifier: Modifier = Mod
 
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ),
             verticalAlignment = Alignment.Top
         ) { page ->
             val currentFamily = platformFamilies[page]

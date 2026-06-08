@@ -33,11 +33,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.kychnoo.gamevault.R
 import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.ui.theme.cardColor
 import com.kychnoo.gamevault.ui.widgets.platform.PlatformsRow
@@ -50,40 +52,11 @@ fun GameCard(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
-    cardIndex: Int = 0
 ) {
-    val shouldAnimate = cardIndex < 8
-
-    var visible by rememberSaveable() { mutableStateOf(!shouldAnimate) }
-    val scale by animateFloatAsState(
-        targetValue = if (visible) 1f else 0.8f,
-        animationSpec = if (shouldAnimate) spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ) else snap(),
-        label = "CardScale"
-    )
-    val alpha by animateFloatAsState(
-        targetValue = if (visible) 1f else 0f,
-        animationSpec = tween(durationMillis = 300),
-        label = "CardAlpha"
-    )
-
-    if (shouldAnimate) {
-        LaunchedEffect(Unit) {
-            delay((cardIndex * 50L).coerceAtMost(300L))
-            visible = true
-        }
-    }
 
     Card(
         shape = RoundedCornerShape(24.dp),
         modifier = modifier
-        .graphicsLayer {
-            scaleX = scale
-            scaleY = scale
-            this.alpha = alpha
-        }
         .fillMaxWidth()
         .aspectRatio(0.7f)
         .clickable(
@@ -98,6 +71,7 @@ fun GameCard(
             with (sharedTransitionScope) {
                 AsyncImage(
                     model = gameData.imageUrl,
+                    placeholder = painterResource(R.drawable.game_card_placeholder),
                     contentDescription = gameData.title,
                     modifier = Modifier
                         .fillMaxWidth()

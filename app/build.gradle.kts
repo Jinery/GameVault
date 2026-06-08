@@ -16,7 +16,7 @@ kotlin {
 
 android {
     namespace = "com.kychnoo.gamevault"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.kychnoo.gamevault"
@@ -88,7 +88,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // DateTime
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+    implementation(libs.kotlinx.datetime)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

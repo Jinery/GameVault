@@ -35,26 +35,27 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GameVaultTheme {
-                val navController = rememberNavController()
+                SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
+                    val navController = rememberNavController()
 
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-                val currentDestination = navBackStackEntry?.destination
-                val shouldShowBottomBar = currentDestination?.hasRoute<MainScreenRoute>() == true
+                    val currentDestination = navBackStackEntry?.destination
+                    val shouldShowBottomBar =
+                        currentDestination?.hasRoute<MainScreenRoute>() == true
 
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    bottomBar = {
-                        AnimatedVisibility(
-                            visible = shouldShowBottomBar,
-                            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
-                        ) {
-                            BottomBar(navController = navController)
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        bottomBar = {
+                            AnimatedVisibility(
+                                visible = shouldShowBottomBar,
+                                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+                            ) {
+                                BottomBar(navController = navController)
+                            }
                         }
-                    }
-                ) { innerPadding ->
-                    SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
+                    ) { innerPadding ->
                         NavHost(
                             navController = navController,
                             startDestination = MainScreenRoute,
@@ -63,7 +64,12 @@ class MainActivity : ComponentActivity() {
                             composable<MainScreenRoute> {
                                 MainScreen(
                                     onDetailClick = { game ->
-                                        navController.navigate(GameDetail(id = game.id, imageUrl = game.imageUrl))
+                                        navController.navigate(
+                                            GameDetail(
+                                                id = game.id,
+                                                imageUrl = game.imageUrl
+                                            )
+                                        )
                                     },
                                     innerPadding = innerPadding,
                                     sharedTransitionScope = this@SharedTransitionLayout,
