@@ -31,3 +31,8 @@ val BluePrimary = Color(0xFF275BA3)
 val LightBluePrimary = Color(0xFF285799)
 
 val TextDark = Color(0xFF1C2834)
+
+/*  Metacritic colors. */
+val MetacriticGreen = Color(0xFF66CC33)
+val MetacriticYellow = Color(0xFFFFCC33)
+val MetacriticRed = Color(0xFFFF0000)

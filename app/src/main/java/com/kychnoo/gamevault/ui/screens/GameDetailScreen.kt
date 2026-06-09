@@ -66,7 +66,9 @@ import com.kychnoo.gamevault.data.model.ui.states.GameDetailsUiState
 import com.kychnoo.gamevault.ui.viewModel.GameDetailViewModel
 import com.kychnoo.gamevault.ui.widgets.SharedImageOverlayContainer
 import com.kychnoo.gamevault.ui.widgets.details.GameDescriptionWidget
+import com.kychnoo.gamevault.ui.widgets.metacritic.MetacriticBadge
 import com.kychnoo.gamevault.ui.widgets.platform.PlatformDetailsRow
+import com.kychnoo.gamevault.ui.widgets.rating.RatingsSection
 import com.kychnoo.gamevault.ui.widgets.screenshots.ScreenshotsRow
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
@@ -324,6 +326,17 @@ private fun GameDetailScreenContent(
                                     visible = contentVisible,
                                 ) {
                                     PlatformDetailsRow(gameDetailData.platforms)
+                                }
+                                Spacer(Modifier.height(5.dp))
+                                AnimatedVisibility(
+                                    visible = contentVisible
+                                ) {
+                                    RatingsSection(
+                                        metacriticScore = gameDetailData.metacritic,
+                                        rawgRating = gameDetailData.rating,
+                                        ratingsCount = gameDetailData.ratingsCount,
+                                        modifier = Modifier.padding(horizontal = 12.dp)
+                                    )
                                 }
                                 Spacer(Modifier.height(20.dp))
                             }

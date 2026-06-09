@@ -36,4 +36,11 @@
     <string name="recom_requirements_not_specified">Recommended system requirements are not specified</string>
     <string name="dont_have_requirements">😔 Oops, we don\'t have requirements for %s</string>
     <string name="supported_consoles">Supported %1s consoles:\n%2s</string>
+
+    <!--  Ratings.  -->
+    <string name="game_ratings">Game Ratings</string>
+    <plurals name="ratings_format">
+        <item quantity="one">%d rating</item>
+        <item quantity="other">%d ratings</item>
+    </plurals>
 </resources>
