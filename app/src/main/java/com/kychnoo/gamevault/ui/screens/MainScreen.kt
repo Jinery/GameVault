@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -33,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -88,7 +90,11 @@ private fun MainScreenContent(
         contentAlignment = Alignment.Center
     ) {
         when (uiState) {
-            is UiState.Loading -> CircularProgressIndicator()
+            is UiState.Loading -> CircularProgressIndicator(
+                modifier = Modifier.size(56.dp),
+                strokeWidth = 6.dp,
+                gapSize = 8.dp
+            )
 
             is UiState.Success -> GamesGrid(
                 games = uiState.data,
@@ -127,7 +133,10 @@ private fun GamesGrid(
         visible = isDataLoaded,
         enter = fadeIn(tween(500)) + slideInVertically(
             initialOffsetY = { it / 2 },
-            animationSpec = spring(stiffness = Spring.StiffnessLow)
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMediumLow
+            )
         )
     ) {
         LazyVerticalGrid(
@@ -205,7 +214,8 @@ private fun MainScreenPreview() {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
                 MainScreenContent(
-                    uiState = UiState.Success(sampleGames),
+//                    uiState = UiState.Success(sampleGames),
+                    uiState = UiState.Loading,
                     onDetailClick = {},
                     innerPadding = PaddingValues(0.dp),
                     sharedTransitionScope = this@SharedTransitionLayout,

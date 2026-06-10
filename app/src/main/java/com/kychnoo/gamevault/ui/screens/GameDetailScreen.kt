@@ -54,23 +54,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.kychnoo.gamevault.R
-import com.kychnoo.gamevault.data.model.gameDetail.GameDetailData
-import com.kychnoo.gamevault.data.model.screenshots.ScreenshotData
 import com.kychnoo.gamevault.data.model.ui.UiState
 import com.kychnoo.gamevault.data.model.ui.states.GameDetailsUiState
 import com.kychnoo.gamevault.ui.viewModel.GameDetailViewModel
 import com.kychnoo.gamevault.ui.widgets.SharedImageOverlayContainer
 import com.kychnoo.gamevault.ui.widgets.details.GameDescriptionWidget
-import com.kychnoo.gamevault.ui.widgets.metacritic.MetacriticBadge
+import com.kychnoo.gamevault.ui.widgets.development.GameDevelopmentTeamsCard
 import com.kychnoo.gamevault.ui.widgets.platform.PlatformDetailsRow
 import com.kychnoo.gamevault.ui.widgets.rating.RatingsSection
 import com.kychnoo.gamevault.ui.widgets.screenshots.ScreenshotsRow
-import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -113,6 +109,9 @@ fun GameDetailScreen(
             },
             onRetryLoadScreenshots = {
                 viewModel.getGameScreenshots(id)
+            },
+            onRetryLoadDevelopmentTeamsInfo = {
+                viewModel.getDevelopmentTeamsForGame(id)
             }
         )
     }
@@ -129,6 +128,7 @@ private fun GameDetailScreenContent(
     onBackClick: () -> Unit,
     onRetryLoad: () -> Unit,
     onRetryLoadScreenshots: () -> Unit,
+    onRetryLoadDevelopmentTeamsInfo: () -> Unit,
 ) {
     val gameDetailState = uiState.gameDetailsState
 
@@ -263,7 +263,11 @@ private fun GameDetailScreenContent(
                                     .padding(top = 50.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(48.dp),
+                                    strokeWidth = 5.dp,
+                                    gapSize = 4.dp
+                                )
                             }
                         }
                         is UiState.Success -> {
@@ -325,20 +329,30 @@ private fun GameDetailScreenContent(
                                 AnimatedVisibility(
                                     visible = contentVisible,
                                 ) {
-                                    PlatformDetailsRow(gameDetailData.platforms)
+                                    Column {
+                                        PlatformDetailsRow(gameDetailData.platforms)
+                                        Spacer(Modifier.height(5.dp))
+                                        RatingsSection(
+                                            metacriticScore = gameDetailData.metacritic,
+                                            rawgRating = gameDetailData.rating,
+                                            ratingsCount = gameDetailData.ratingsCount,
+                                            modifier = Modifier.padding(horizontal = 12.dp)
+                                        )
+                                        Spacer(Modifier.height(5.dp))
+                                        Text(
+                                            text = stringResource(R.string.developers),
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            modifier = Modifier.padding(horizontal = 16.dp)
+                                        )
+                                        Spacer(Modifier.height(5.dp))
+                                        GameDevelopmentTeamsCard(
+                                            state = uiState.developmentTeamsState,
+                                            onRetryClick = onRetryLoadDevelopmentTeamsInfo,
+                                            modifier = Modifier.padding(horizontal = 12.dp)
+                                        )
+                                        Spacer(Modifier.height(20.dp))
+                                    }
                                 }
-                                Spacer(Modifier.height(5.dp))
-                                AnimatedVisibility(
-                                    visible = contentVisible
-                                ) {
-                                    RatingsSection(
-                                        metacriticScore = gameDetailData.metacritic,
-                                        rawgRating = gameDetailData.rating,
-                                        ratingsCount = gameDetailData.ratingsCount,
-                                        modifier = Modifier.padding(horizontal = 12.dp)
-                                    )
-                                }
-                                Spacer(Modifier.height(20.dp))
                             }
                         }
                         is UiState.Error -> {

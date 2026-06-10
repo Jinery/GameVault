@@ -18,7 +18,12 @@
     <string name="error_header">🎮 Oh!</string>
     <string name="unexpected_state">Unexpected state</string>
 
+    <!--  Loading.  -->
+    <string name="loading_text">Please wait while we load the data</string>
+
+    <!--  Retry Load.  -->
     <string name="retry">Retry</string>
+    <string name="click_card_for_retry">Click on the card to try again</string>
     
     <!-- Game Detail Screen -->
     <string name="about_this_game">About this game</string>
@@ -43,4 +48,12 @@
         <item quantity="one">%d rating</item>
         <item quantity="other">%d ratings</item>
     </plurals>
+
+    <!--  Development Teams.  -->
+    <plurals name="dev_team_games_count">
+        <item quantity="one">%d game</item>
+        <item quantity="other">%d games</item>
+    </plurals>
+    <string name="developers">Developers</string>
+    <string name="development_team_not_found">Development team not found</string>
 </resources>

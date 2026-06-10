@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Tab
@@ -25,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,7 +69,10 @@ fun PlatformDetailsRow(
             modifier = Modifier.fillMaxWidth(),
             indicator = {
                 TabRowDefaults.SecondaryIndicator(
-                    Modifier.tabIndicatorOffset(pagerState.currentPage),
+                    Modifier
+                        .tabIndicatorOffset(pagerState.currentPage)
+                        .clip(RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp)),
+                    height = 4.dp,
                     color = MaterialTheme.colorScheme.primary
                 )
             }

@@ -11,6 +11,7 @@ import com.kychnoo.gamevault.provider.AndroidResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -26,12 +27,14 @@ class MainViewModel(
 
     fun loadGames() {
         viewModelScope.launch {
-            _uiState.value = UiState.Loading
+            _uiState.update { UiState.Loading }
 
-            _uiState.value = when (val result = gamesRepository.fetchAllGames()) {
+            val newState = when (val result = gamesRepository.fetchAllGames()) {
                 is RepResult.Success -> UiState.Success(result.data)
                 is RepResult.Error -> UiState.Error(result.exception.message ?: resourceProvider.getString(R.string.unknown_error))
             }
+
+            _uiState.update { newState }
         }
     }
 }
