@@ -8,7 +8,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
@@ -77,14 +79,36 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable<GameDetail> { backStackEntry ->
+                            composable<GameDetail>(
+                                enterTransition = {
+                                    slideInHorizontally(initialOffsetX = { it }) + fadeIn()
+                                },
+                                exitTransition = {
+                                    slideOutHorizontally(targetOffsetX = { -it }) + fadeOut()
+                                },
+                                popEnterTransition = {
+                                    slideInHorizontally(initialOffsetX = { -it }) + fadeIn()
+                                },
+                                popExitTransition = {
+                                    slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
+                                }
+                            ) { backStackEntry ->
                                 val route: GameDetail = backStackEntry.toRoute()
                                 GameDetailScreen(
                                     id = route.id,
                                     imageUrl = route.imageUrl,
                                     sharedTransitionScope = this@SharedTransitionLayout,
                                     animatedVisibilityScope = this@composable,
-                                    onBackClick = { navController.navigateUp() }
+                                    onBackClick = { navController.navigateUp() },
+                                    backStackEntry = backStackEntry,
+                                    onGameDetailClick = { game ->
+                                        navController.navigate(
+                                            GameDetail(
+                                                id = game.id,
+                                                imageUrl = game.imageUrl
+                                            )
+                                        )
+                                    }
                                 )
                             }
                             composable<SearchScreenRoute> {

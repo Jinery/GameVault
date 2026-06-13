@@ -32,7 +32,7 @@ class ApiResponseCall(
                         }
                     }
                     else -> {
-                        ApiResponse.ApiError(response.errorBody().toString(), response.code())
+                        ApiResponse.ApiError(response.errorBody()?.string() ?: "Unknown error", response.code())
                     }
                 }
                 callback.onResponse(this@ApiResponseCall, Response.success(apiResponse))

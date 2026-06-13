@@ -24,6 +24,7 @@
     <!--  Retry Load.  -->
     <string name="retry">Retry</string>
     <string name="click_card_for_retry">Click on the card to try again</string>
+    <string name="click_here_for_retry">Click here to try again</string>
     
     <!-- Game Detail Screen -->
     <string name="about_this_game">About this game</string>
@@ -56,4 +57,16 @@
     </plurals>
     <string name="developers">Developers</string>
     <string name="development_team_not_found">Development team not found</string>
+
+    <!--  Released and updated dates. -->
+    <string name="released">Released: %s</string>
+    <string name="updated">Updated: %s</string>
+    <string name="date_not_available">Not available</string>
+
+    <!--  Website Button.  -->
+    <string name="visit_website">Visit Game Website</string>
+    <string name="browser_not_found">Browser not found</string>
+
+    <!-- Suggested games. -->
+    <string name="suggested_games_not_found">Oh, looks like there aren\'t any suggested games</string>
 </resources>

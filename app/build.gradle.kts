@@ -30,8 +30,15 @@ android {
         val properties = Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
         val apiKey = properties.getProperty("RAWG_API_KEY")
+        // Set to true if you have an enterprise API or a business account in the Rawg API.
+        // If you want to keep suggested games without an Enterprise API,
+        // you can use games from a similar series. Open
+        // `/app/src/main/java/com/kychnoo/gamevault/data/remote/api/RawgApi.kt`
+        // and change: `games/{id}/suggested` to `games/{id}/game-series`, and set `isEnterpriseApiUser` to `true`.
+        val isEnterpriseApiUser = false
 
         buildConfigField("String", "RAWG_API_KEY", "\"$apiKey\"")
+        buildConfigField("Boolean", "IS_ENTERPRISE_API_USER", isEnterpriseApiUser.toString())
     }
 
     buildTypes {

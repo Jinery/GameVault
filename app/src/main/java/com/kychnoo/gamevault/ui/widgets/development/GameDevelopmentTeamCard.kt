@@ -38,58 +38,80 @@ import com.kychnoo.gamevault.data.model.development.DevelopmentTeamPageData
 import com.kychnoo.gamevault.data.model.ui.UiState
 
 @Composable
-fun GameDevelopmentTeamsCard(
+fun GameDevelopmentTeamCard(
     state: UiState<DevelopmentTeamPageData>,
     onRetryClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp
-        )
+        verticalArrangement = Arrangement.Center,
     ) {
-        when (state) {
-            UiState.Loading -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp)
-                        .height(64.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(R.string.loading_text),
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(Modifier.height(5.dp))
-                    LinearProgressIndicator(
-                        color = MaterialTheme.colorScheme.primary,
-                        strokeCap = StrokeCap.Round,
+        Text(
+            text = stringResource(R.string.developers),
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(4.dp)
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 3.dp
+            )
+        ) {
+            when (state) {
+                UiState.Loading -> {
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(8.dp)
-                    )
+                            .padding(12.dp)
+                            .height(64.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.loading_text),
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(Modifier.height(5.dp))
+                        LinearProgressIndicator(
+                            color = MaterialTheme.colorScheme.primary,
+                            strokeCap = StrokeCap.Round,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                        )
+                    }
                 }
+
+                is UiState.Success<DevelopmentTeamPageData> -> {
+                    val data = state.data
+                    if (data.count > 1) {
+                        // Multiple developers/teams - show overlapping avatars.
+                        MultiplyDevelopmentTeamCard(data)
+                    } else if (data.count == 1 && data.results.first().image != null) {
+                        // Single developer - show large avatar with name and game count.
+                        SingleDevelopmentTeamCard(data)
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().size(80.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.development_team_not_found),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                    }
+                }
+
+                is UiState.Error -> ErrorColumn(
+                    message = state.message,
+                    onRetryClick = onRetryClick
+                )
             }
-            is UiState.Success<DevelopmentTeamPageData> -> {
-                val data = state.data
-                if (data.count > 1) {
-                    MultiplyDevelopmentTeamCard(data)
-                } else if (data.count == 1) {
-                    SingleDevelopmentTeamCard(data)
-                }
-                else {
-                    Text(
-                        text = stringResource(R.string.development_team_not_found),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-            is UiState.Error -> ErrorColumn(message = state.message, onRetryClick = onRetryClick)
         }
     }
 }
@@ -117,6 +139,7 @@ private fun SingleDevelopmentTeamCard(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.ExtraBold
             )
+            // Uses plural resource to show e.g. "2 games" correctly.
             Text(
                 text = pluralStringResource(
                     R.plurals.dev_team_games_count,
@@ -135,6 +158,7 @@ private fun MultiplyDevelopmentTeamCard(
     data: DevelopmentTeamPageData,
     modifier: Modifier = Modifier
 ) {
+    // API may return entries without an image, filter them out to avoid broken UI.
     val filteredData = data.results.filter { it.image != null }
     Column(
         modifier = modifier.padding(6.dp)
@@ -148,7 +172,7 @@ private fun MultiplyDevelopmentTeamCard(
                     contentDescription = "dev_team_${devTeam.id}_icon",
                     modifier = Modifier
                         .size(64.dp)
-                        .offset(x = (index * 32).dp)
+                        .offset(x = (index * 32).dp) // Shift each avatar to create overlapping effect.
                         .zIndex(index.toFloat())
                         .clip(CircleShape)
                 )
@@ -157,6 +181,7 @@ private fun MultiplyDevelopmentTeamCard(
 
         Spacer(Modifier.height(4.dp))
 
+        // Show all names in a comma‑separated list below the avatars.
         val allDevTeamsNames = filteredData.joinToString(separator = ",") { it.name }
         Text(
             text = allDevTeamsNames,
@@ -177,7 +202,7 @@ private fun ErrorColumn(
             .fillMaxWidth()
             .padding(6.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onRetryClick),
+            .clickable(onClick = onRetryClick), // Whole area is tappable for retry.
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -201,9 +226,9 @@ private fun ErrorColumn(
 
 @Preview
 @Composable
-fun GameDevelopmentTeamsCardPreview() {
+fun GameDevelopmentTeamCardPreview() {
     Box(modifier = Modifier.width(300.dp).height(200.dp), contentAlignment = Alignment.Center) {
-        GameDevelopmentTeamsCard(
+        GameDevelopmentTeamCard(
             state = UiState.Success(DevelopmentTeamPageData.PreviewDevTeamPageData),
             onRetryClick = {  },
             modifier = Modifier.padding(12.dp)

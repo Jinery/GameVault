@@ -102,7 +102,7 @@ fun GameCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     PlatformsRow(gameData.platforms)
-                    RatingBadge(gameData.score)
+                    if (gameData.score != null) RatingBadge(gameData.score)
                 }
 
                 Text(

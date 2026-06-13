@@ -16,26 +16,28 @@ import com.kychnoo.gamevault.ui.widgets.metacritic.MetacriticBadge
 
 @Composable
 fun RatingsSection(
-    metacriticScore: Int,
-    rawgRating: Float,
-    ratingsCount: Int,
+    metacriticScore: Int?,
+    rawgRating: Float?,
+    ratingsCount: Int?,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        Text(
-            text = stringResource(R.string.game_ratings),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 12.dp)
-        )
+    if (metacriticScore != null || (rawgRating != null && ratingsCount != null)) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.game_ratings),
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 12.dp)
+            )
 
-        RawgRatingBar(
-            rating = rawgRating,
-            ratingsCount = ratingsCount
-        )
-        Spacer(Modifier.height(5.dp))
-        MetacriticBadge(score = metacriticScore)
+            if (rawgRating != null && ratingsCount != null) RawgRatingBar(
+                rating = rawgRating,
+                ratingsCount = ratingsCount
+            )
+            Spacer(Modifier.height(5.dp))
+            if (metacriticScore != null) MetacriticBadge(score = metacriticScore)
+        }
     }
 }

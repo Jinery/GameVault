@@ -44,6 +44,7 @@ fun MetacriticBadge(score: Int, modifier: Modifier = Modifier) {
     Card(
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor, contentColor = textColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
         modifier = modifier.fillMaxWidth().heightIn(80.dp, 128.dp)
     ) {
         Row(

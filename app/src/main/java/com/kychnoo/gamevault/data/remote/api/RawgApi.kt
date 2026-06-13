@@ -28,4 +28,7 @@ interface RawgApi {
     suspend fun getDevelopmentTeamForGame(
         @Path("game_pk") gamePk: String,
     ): ApiResponse<DevelopmentTeamResponse>
+
+    @GET("games/{id}/suggested")
+    suspend fun getSuggestedGames(@Path("id") gameId: Int): ApiResponse<GameResponse>
 }

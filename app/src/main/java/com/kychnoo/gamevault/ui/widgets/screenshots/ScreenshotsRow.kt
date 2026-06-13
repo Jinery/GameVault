@@ -2,6 +2,7 @@ package com.kychnoo.gamevault.ui.widgets.screenshots
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,13 +59,18 @@ fun ScreenshotsRow(
             is UiState.Success -> {
                 with (sharedTransitionScope) {
                     val screenshots = screenshotsState.data.results
+                    val staggeredGridState = rememberLazyStaggeredGridState()
                     LazyHorizontalStaggeredGrid(
                         rows = StaggeredGridCells.Fixed(2),
+                        state = staggeredGridState,
                         modifier = Modifier.fillMaxWidth().height(220.dp),
                         horizontalItemSpacing = 8.dp,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(screenshots) { screenshot ->
+                        items(
+                            items = screenshots,
+                            key = { screenshot -> screenshot.id }
+                        ) { screenshot ->
                             AsyncImage(
                                 model = screenshot.image,
                                 contentDescription = "content_screenshot_${screenshot.id}",
@@ -118,5 +126,20 @@ private fun ErrorMessage(
         Button(onClick = onRetryClick) {
             Text(stringResource(R.string.retry))
         }
+    }
+}
+
+@Composable
+private fun rememberLazyStaggeredGridState(
+    initialFirstVisibleItemIndex: Int = 0,
+    initialFirstVisibleItemOffset: Int = 0
+): LazyStaggeredGridState {
+    return rememberSaveable(
+        saver = LazyStaggeredGridState.Saver
+    ) {
+        LazyStaggeredGridState(
+            initialFirstVisibleItemIndex = initialFirstVisibleItemIndex,
+            initialFirstVisibleItemOffset = initialFirstVisibleItemOffset
+        )
     }
 }

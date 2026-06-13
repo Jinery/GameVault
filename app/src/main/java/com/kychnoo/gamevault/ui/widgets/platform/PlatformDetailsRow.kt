@@ -48,6 +48,8 @@ fun PlatformDetailsRow(
         platforms.mapNotNull { it.platform.toFamily() }.distinct().sortedBy { it.ordinal }
     }
 
+    if (platformFamilies.isEmpty()) return
+
     val pagerState = rememberPagerState { platformFamilies.size }
     val coroutineScope = rememberCoroutineScope()
 

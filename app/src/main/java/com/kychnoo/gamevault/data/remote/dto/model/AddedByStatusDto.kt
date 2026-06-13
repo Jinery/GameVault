@@ -6,12 +6,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AddedByStatusDto(
-    val yet: Int,
-    val owned: Int,
-    val beaten: Int,
-    val toplay: Int,
-    val dropped: Int,
-    val playing: Int
+    val yet: Int? = null,
+    val owned: Int? = null,
+    val beaten: Int? = null,
+    val toplay: Int? = null,
+    val dropped: Int? = null,
+    val playing: Int? = null
 ) : DtoMapper<AddedByStatusData> {
     override fun toData(): AddedByStatusData = AddedByStatusData(
         yet = this.yet,

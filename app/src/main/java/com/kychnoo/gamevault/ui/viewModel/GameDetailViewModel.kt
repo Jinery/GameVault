@@ -3,6 +3,7 @@ package com.kychnoo.gamevault.ui.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kychnoo.gamevault.R
+import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.data.model.RepResult
 import com.kychnoo.gamevault.data.model.development.DevelopmentTeamPageData
 import com.kychnoo.gamevault.data.model.gameDetail.GameDetailData
@@ -11,6 +12,7 @@ import com.kychnoo.gamevault.data.model.ui.UiState
 import com.kychnoo.gamevault.data.model.ui.states.GameDetailsUiState
 import com.kychnoo.gamevault.data.remote.repository.RawgDetailGamesRepository
 import com.kychnoo.gamevault.data.remote.repository.RawgDevelopmentTeamsRepository
+import com.kychnoo.gamevault.data.remote.repository.RawgGamesRepository
 import com.kychnoo.gamevault.data.remote.repository.RawgScreenshotsRepository
 import com.kychnoo.gamevault.provider.AndroidResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +23,7 @@ import kotlinx.coroutines.launch
 
 class GameDetailViewModel(
     private val gameDetailRepository: RawgDetailGamesRepository,
+    private val gamesRepository: RawgGamesRepository,
     private val screenshotsRepository: RawgScreenshotsRepository,
     private val developmentTeamsRepository: RawgDevelopmentTeamsRepository,
     private val resourceProvider: AndroidResourceProvider
@@ -80,9 +83,26 @@ class GameDetailViewModel(
         }
     }
 
+    fun getSuggestedGames(gameId: Int) {
+        val currentSuggestedGamesState = _uiState.value.suggestedGames
+        if (currentSuggestedGamesState is UiState.Success) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(suggestedGames = UiState.Loading) }
+
+            val newState = when (val result = gamesRepository.getSuggestedGames(gameId)) {
+                is RepResult.Success<List<GameData>> -> UiState.Success(result.data)
+                is RepResult.Error -> UiState.Error(result.exception.message ?: resourceProvider.getString(R.string.unknown_error))
+            }
+
+            _uiState.update { it.copy(suggestedGames = newState) }
+        }
+    }
+
     fun loadGameData(gameId: Int) {
         getGameDetails(gameId)
         getGameScreenshots(gameId)
         getDevelopmentTeamsForGame(gameId)
+        getSuggestedGames(gameId)
     }
 }

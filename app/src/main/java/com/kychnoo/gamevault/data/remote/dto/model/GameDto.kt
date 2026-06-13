@@ -9,7 +9,7 @@ data class GameDto(
     val name: String,
     val background_image: String,
     val rating: Float,
-    val metacritic: Int,
+    val metacritic: Int?,
     val platforms: List<PlatformArDto>
 )
 

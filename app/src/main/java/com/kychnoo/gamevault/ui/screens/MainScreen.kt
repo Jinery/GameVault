@@ -159,11 +159,7 @@ private fun GamesGrid(
                     gameData = game,
                     onCardClick = { onDetailClick(game) },
                     sharedTransitionScope = sharedTransitionScope,
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    modifier = Modifier.animateItem(
-                        fadeInSpec = tween(300),
-                        placementSpec = spring(stiffness = Spring.StiffnessLow)
-                    )
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
         }

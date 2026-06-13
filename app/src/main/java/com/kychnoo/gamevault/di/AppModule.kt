@@ -23,5 +23,5 @@ val appModule = module {
     single { RawgDevelopmentTeamsRepository(get(), get()) }
 
     viewModel { MainViewModel(get(), get()) }
-    viewModel { GameDetailViewModel(get(), get(), get(), get()) }
+    viewModel { GameDetailViewModel(get(), get(), get(), get(), get()) }
 }

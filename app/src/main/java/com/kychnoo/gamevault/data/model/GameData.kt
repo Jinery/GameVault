@@ -8,7 +8,7 @@ data class GameData(
     val id: Int,
     val title: String,
     val imageUrl: String,
-    val score: Int,
+    val score: Int?,
     val rating: Float,
     val platforms: List<PlatformArData>,
     val isFavorite: Boolean = false
