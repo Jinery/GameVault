@@ -6,7 +6,7 @@
 ![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-2026.05.01-4285F4.svg?style=for-the-badge&logo=jetpackcompose&logoColor=white)
 ![Android](https://img.shields.io/badge/Android-3DDC84.svg?style=for-the-badge&logo=android&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Gradle-8.9-02303A.svg?style=for-the-badge&logo=gradle&logoColor=white)
-![CI](https://img.shields.io/github/actions/workflow/status/kychnoo/GameVault/android-test.yml?style=for-the-badge&logo=githubactions&label=CI)
+![CI](https://img.shields.io/github/actions/workflow/status/Jinery/GameVault/android-test.yml?style=for-the-badge&logo=githubactions&label=CI)
 ![License](https://img.shields.io/badge/License-GPLv2-blue.svg?style=for-the-badge&logo=opensourceinitiative&logoColor=white)
 
 </div>
@@ -160,8 +160,8 @@ Automated testing on every push and PR:
 
 | Platform | Status |Description |
 |----------|--------|------------|
-|GitHub Actions | ![Github CI](https://img.shields.io/github/actions/workflow/status/kychnoo/GameVault/android-test.yml?style=flat-square&logo=githubactions&label=CI) | Runs tests on push to master & PR |
-| GitLab CI | ![Gitlab CI](https://img.shields.io/gitlab/pipeline-status/kychnoo/GameVault?style=flat-square&logo=gitlab&label=CI) | Mirror from GitHub with test execution |
+|GitHub Actions | ![Github CI](https://img.shields.io/github/actions/workflow/status/Jinery/GameVault/android-test.yml?style=flat-square&logo=githubactions&label=CI) | Runs tests on push to master & PR |
+| GitLab CI | ![Gitlab CI](https://img.shields.io/gitlab/pipeline-status/jinery/GameVault?style=flat-square&logo=gitlab&label=CI) | Mirror from GitHub with test execution |
 
 </div>
 
