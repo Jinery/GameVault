@@ -21,6 +21,10 @@ jobs:
           java-version: '17'
       - run: java --version
 
+      - name: Create local.properties with RAWG_API_KEY
+        run: |
+          echo "RAWG_API_KEY=${{ secrets.RAWG_API_KEY }}" > local.properties
+
       - name: Setup Gradle Cache
         uses: gradle/actions/setup-gradle@v6
 
