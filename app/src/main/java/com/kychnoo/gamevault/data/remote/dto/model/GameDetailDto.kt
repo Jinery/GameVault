@@ -1,6 +1,7 @@
 package com.kychnoo.gamevault.data.remote.dto.model
 
 import com.kychnoo.gamevault.data.model.gameDetail.GameDetailData
+import com.kychnoo.gamevault.data.model.platform.toFamily
 import com.kychnoo.gamevault.data.model.reactions.toDomain
 import com.kychnoo.gamevault.data.parser.toLocalDateOrNull
 import com.kychnoo.gamevault.data.remote.dto.model.rating.RatingDto
@@ -91,5 +92,9 @@ fun GameDetailDto.toGameDetailData() = GameDetailData(
     additionsCount = additions_count,
     gameSeriesCount = game_series_count,
     esrbRating = esrb_rating?.toData(),
-    platforms = this.platforms.toData()
+    platforms = this.platforms.toData(),
+    platformFamilies = this.platforms
+        .mapNotNull { it.platform.toData().toFamily() }
+        .distinct()
+        .sortedBy { it.ordinal },
 )

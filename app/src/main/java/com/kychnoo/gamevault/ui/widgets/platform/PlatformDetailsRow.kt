@@ -42,12 +42,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun PlatformDetailsRow(
     platforms: List<PlatformArData>,
-    modifier: Modifier = Modifier) {
-    // Extract unique platform families and sort by enum order for stable UI.
-    val platformFamilies = remember(platforms) {
-        platforms.mapNotNull { it.platform.toFamily() }.distinct().sortedBy { it.ordinal }
-    }
-
+    platformFamilies: List<PlatformFamily>,
+    modifier: Modifier = Modifier
+) {
     if (platformFamilies.isEmpty()) return
 
     val pagerState = rememberPagerState { platformFamilies.size }

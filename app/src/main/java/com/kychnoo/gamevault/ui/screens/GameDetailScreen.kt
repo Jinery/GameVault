@@ -28,7 +28,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -79,15 +78,15 @@ import com.kychnoo.gamevault.ui.widgets.website.WebsiteButton
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
-@Serializable data class GameDetail(
+@Serializable data class GameDetailRoute(
     val id: Int,
-    val imageUrl: String = ""
+    val imageUrl: String? = ""
 )
 
 @Composable
 fun GameDetailScreen(
     id: Int,
-    imageUrl: String,
+    imageUrl: String?,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     backStackEntry: NavBackStackEntry,
@@ -135,7 +134,7 @@ fun GameDetailScreen(
 @Composable
 private fun GameDetailScreenContent(
     id: Int,
-    imageUrl: String,
+    imageUrl: String?,
     uiState: GameDetailsUiState,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -239,7 +238,7 @@ private fun GameDetailScreenContent(
                         item {
                             ErrorMessage(
                                 message = gameDetailState.message,
-                                onRetryClick = onRetryLoad,
+                                onRetry = onRetryLoad,
                                 modifier = Modifier.padding(top = 100.dp)
                             )
                         }
@@ -325,7 +324,10 @@ private fun GameDetailScreenContent(
                                 visible = contentVisible,
                             ) {
                                 if (gameDetailData.platforms.isNotEmpty()) {
-                                    PlatformDetailsRow(gameDetailData.platforms)
+                                    PlatformDetailsRow(
+                                        platforms = gameDetailData.platforms,
+                                        platformFamilies = gameDetailData.platformFamilies
+                                    )
                                 }
                             }
                         }
@@ -557,32 +559,6 @@ private fun GameDetailScreenContent(
                 else -> { /*  Pass. Topbar will not be displayed without loaded data.  */
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun ErrorMessage(
-    message: String,
-    onRetryClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = stringResource(R.string.error_header),
-            style = MaterialTheme.typography.headlineMedium
-        )
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
-        Button(onClick = onRetryClick) {
-            Text(stringResource(R.string.retry))
         }
     }
 }

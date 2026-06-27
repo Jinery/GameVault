@@ -1,0 +1,18 @@
+image: openjdk:17-jdk
+
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+    - chmod +x gradlew
+    - ./gradlew testDebugUnitTest
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - ~/.gradle/caches/
+      - ~/.gradle/wrapper/
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"

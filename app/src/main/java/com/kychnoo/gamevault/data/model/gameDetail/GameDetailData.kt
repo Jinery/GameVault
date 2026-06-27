@@ -3,6 +3,7 @@ package com.kychnoo.gamevault.data.model.gameDetail
 import com.kychnoo.gamevault.data.model.addedBy.AddedByStatusData
 import com.kychnoo.gamevault.data.model.esrb.EsrbRatingData
 import com.kychnoo.gamevault.data.model.platform.PlatformArData
+import com.kychnoo.gamevault.data.model.platform.PlatformFamily
 import com.kychnoo.gamevault.data.model.ratings.RatingData
 import com.kychnoo.gamevault.data.model.reactions.Reaction
 import kotlinx.datetime.LocalDate
@@ -47,5 +48,6 @@ data class GameDetailData(
     val additionsCount: Int?,
     val gameSeriesCount: Int?,
     val esrbRating: EsrbRatingData?,
-    val platforms: List<PlatformArData>
+    val platforms: List<PlatformArData>,
+    val platformFamilies: List<PlatformFamily>
 )

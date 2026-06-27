@@ -23,5 +23,11 @@ data class PlatformArData(
             "3.12.1994",
             null
         )
+
+        fun pc(): PlatformArData = PlatformArData(
+            PlatformData.pc(),
+            null,
+            RequirementsData(minimum = "Windows 10/Ubuntu Linux 26\nAMD Radeon R7\n16GB RAM\nNVIDIA GeForce GTX 1050", recommended = null)
+        )
     }
 }

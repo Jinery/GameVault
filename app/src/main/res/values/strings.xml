@@ -69,4 +69,25 @@
 
     <!-- Suggested games. -->
     <string name="suggested_games_not_found">Oh, looks like there aren\'t any suggested games</string>
+
+    <!-- Search bar. -->
+    <string name="search_games_bar_title">Search Games</string>
+
+    <!-- History. -->
+    <string name="no_search_history">We don\'t have saved search history</string>
+
+    <string name="look_something">Try looking for something</string>
+    <string name="search_games_no_found">We couldn\'t find any games matching your search</string>
+
+    <!-- Filters. -->
+    <string name="filters_title">Filters</string>
+    <string name="sorting_title">Sorting</string>
+
+    <string name="sort_by_popularity">By popularity</string>
+    <string name="sort_by_release_date">By release date</string>
+    <string name="sort_by_ranking">By ranking</string>
+
+    <string name="genres_title">Genres</string>
+
+    <string name="apply_filters">Apply filters</string>
 </resources>

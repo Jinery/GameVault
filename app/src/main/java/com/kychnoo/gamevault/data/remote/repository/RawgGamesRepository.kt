@@ -5,6 +5,7 @@ import com.kychnoo.gamevault.BuildConfig
 import com.kychnoo.gamevault.R
 import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.data.model.RepResult
+import com.kychnoo.gamevault.data.model.request.GameSearchParameters
 import com.kychnoo.gamevault.data.remote.api.RawgApi
 import com.kychnoo.gamevault.data.remote.dto.model.toGameData
 import com.kychnoo.gamevault.data.remote.dto.response.ApiResponse
@@ -24,11 +25,16 @@ class RawgGamesRepository(private val api: RawgApi, private val resourceProvider
     suspend fun getSuggestedGames(gameId: Int): RepResult<List<GameData>> {
         return if (BuildConfig.IS_ENTERPRISE_API_USER) { // Read about this variable in build.gradle.kts(:app).
             withContext(Dispatchers.IO) {
-                val response = api.getSuggestedGames(gameId)
                 processGameResponse(api.getSuggestedGames(gameId))
             }
         } else {
             RepResult.Success(listOf())
+        }
+    }
+
+    suspend fun searchGames(params: GameSearchParameters): RepResult<List<GameData>> {
+        return withContext(Dispatchers.IO) {
+            processGameResponse(api.searchGames(params.toQueryMap()))
         }
     }
 

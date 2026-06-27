@@ -6,9 +6,11 @@ import com.kychnoo.gamevault.data.remote.dto.response.ApiResponse
 import com.kychnoo.gamevault.data.remote.dto.response.DevelopmentTeamResponse
 import com.kychnoo.gamevault.data.remote.dto.response.GameDetailResponse
 import com.kychnoo.gamevault.data.remote.dto.response.GameResponse
+import com.kychnoo.gamevault.data.remote.dto.response.GenreResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
 
 
 interface RawgApi {
@@ -31,4 +33,12 @@ interface RawgApi {
 
     @GET("games/{id}/suggested")
     suspend fun getSuggestedGames(@Path("id") gameId: Int): ApiResponse<GameResponse>
+
+    @GET("games")
+    suspend fun searchGames(
+        @QueryMap options: Map<String, String>
+    ): ApiResponse<GameResponse>
+
+    @GET("genres")
+    suspend fun getGenres(): ApiResponse<GenreResponse>
 }

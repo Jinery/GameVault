@@ -101,7 +101,7 @@ fun GameCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    PlatformsRow(gameData.platforms)
+                    PlatformsRow(gameData.platformFamilies)
                     if (gameData.score != null) RatingBadge(gameData.score)
                 }
 

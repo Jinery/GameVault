@@ -11,5 +11,6 @@ data class PlatformData(
         fun xbox(): PlatformData = PlatformData(13, "Xbox", "xbox")
 
         fun playStation(): PlatformData = PlatformData(27, "PlayStation", "playstation")
+        fun pc(): PlatformData = PlatformData(4, "PC", "pc")
     }
 }

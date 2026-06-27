@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -29,12 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,10 +40,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kychnoo.gamevault.R
 import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.data.model.platform.PlatformArData
+import com.kychnoo.gamevault.data.model.platform.PlatformFamily
 import com.kychnoo.gamevault.data.model.ui.UiState
 import com.kychnoo.gamevault.ui.theme.GameVaultTheme
 import com.kychnoo.gamevault.ui.viewModel.MainViewModel
 import com.kychnoo.gamevault.ui.widgets.GameCard
+import com.kychnoo.gamevault.ui.widgets.loading.CircularLoader
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -90,11 +89,7 @@ private fun MainScreenContent(
         contentAlignment = Alignment.Center
     ) {
         when (uiState) {
-            is UiState.Loading -> CircularProgressIndicator(
-                modifier = Modifier.size(56.dp),
-                strokeWidth = 6.dp,
-                gapSize = 8.dp
-            )
+            is UiState.Loading -> CircularLoader()
 
             is UiState.Success -> GamesGrid(
                 games = uiState.data,
@@ -113,7 +108,7 @@ private fun MainScreenContent(
 }
 
 @Composable
-private fun GamesGrid(
+fun GamesGrid(
     games: List<GameData>,
     innerPadding: PaddingValues,
     onDetailClick: (GameData) -> Unit,
@@ -167,7 +162,7 @@ private fun GamesGrid(
 }
 
 @Composable
-private fun ErrorMessage(
+fun ErrorMessage(
     message: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
@@ -197,21 +192,26 @@ private fun ErrorMessage(
 @Composable
 private fun MainScreenPreview() {
     val sampleGames = listOf(
-        GameData(1, "The Witcher 3: Wild Hunt", "", 92, 4.8f, listOf(PlatformArData.playStation())),
-        GameData(2, "Red Dead Redemption 2", "", 97, 4.9f, listOf(PlatformArData.playStation())),
-        GameData(3, "God of War", "", 94, 4.7f, listOf(PlatformArData.playStation())),
-        GameData(4, "Cyberpunk 2077", "", 86, 4.1f, listOf(
-            PlatformArData.playStation(),
-            PlatformArData.xbox()
-        ))
+        GameData(1, "The Witcher 3: Wild Hunt", "", 92, 4.8f, GameData.testPlatforms(),
+            GameData.testFamilies()
+        ),
+        GameData(2, "Red Dead Redemption 2", "", 97, 4.9f, listOf(PlatformArData.playStation(),
+            PlatformArData.pc()), listOf(
+            PlatformFamily.PLAYSTATION, PlatformFamily.PC)
+        ),
+        GameData(3, "God of War", "", 94, 4.7f, listOf(PlatformArData.playStation()),
+            listOf(PlatformFamily.PLAYSTATION)
+        ),
+        GameData(4, "Cyberpunk 2077", "", 86, 4.1f, GameData.testPlatforms(),
+            GameData.testFamilies()
+        )
     )
 
     GameVaultTheme {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
                 MainScreenContent(
-//                    uiState = UiState.Success(sampleGames),
-                    uiState = UiState.Loading,
+                    uiState = UiState.Success(sampleGames),
                     onDetailClick = {},
                     innerPadding = PaddingValues(0.dp),
                     sharedTransitionScope = this@SharedTransitionLayout,
