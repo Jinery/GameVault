@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavBackStackEntry
 import com.kychnoo.gamevault.R
 import com.kychnoo.gamevault.data.model.GameData
@@ -176,6 +177,9 @@ fun SearchScreen(
             state = uiState.games,
             innerPadding = innerPadding,
             onDetailClick = onDetailClick,
+            onFavoriteClick = { id, gameName, isFavorite ->
+                searchViewModel.launchToggleFavorite(searchViewModel.viewModelScope, id, gameName, isFavorite)
+            },
             onRetry = { searchViewModel.performSearch(uiState.searchQuery) },
             sharedTransitionScope = sharedTransitionScope,
             animatedVisibilityScope = animatedVisibilityScope,
@@ -201,6 +205,7 @@ private fun BoxScope.SearchScreenContent(
     state: UiState<List<GameData>>,
     innerPadding: PaddingValues,
     onDetailClick: (GameData) -> Unit,
+    onFavoriteClick: (id: Int, name: String, isFavorite: Boolean) -> Unit,
     onRetry: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -239,6 +244,7 @@ private fun BoxScope.SearchScreenContent(
                         bottom = innerPadding.calculateBottomPadding(),
                     ),
                     onDetailClick = onDetailClick,
+                    onFavoriteClick = onFavoriteClick,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope,
                     modifier = modifier

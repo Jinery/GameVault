@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import com.kychnoo.gamevault.R
 import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.data.model.platform.PlatformArData
@@ -70,6 +71,9 @@ fun MainScreen(
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedVisibilityScope,
         onRetry = { viewModel.loadGames() },
+        onFavoriteClick = { id, gameName, isFavorite ->
+            viewModel.launchToggleFavorite(viewModel.viewModelScope, id, gameName, isFavorite)
+        },
         modifier = modifier
     )
 }
@@ -78,6 +82,7 @@ fun MainScreen(
 private fun MainScreenContent(
     uiState: UiState<List<GameData>>,
     onDetailClick: (GameData) -> Unit,
+    onFavoriteClick: (id: Int, name: String, isFavorite: Boolean) -> Unit,
     innerPadding: PaddingValues,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -95,6 +100,7 @@ private fun MainScreenContent(
                 games = uiState.data,
                 innerPadding = innerPadding,
                 onDetailClick = onDetailClick,
+                onFavoriteClick = onFavoriteClick,
                 sharedTransitionScope = sharedTransitionScope,
                 animatedVisibilityScope = animatedVisibilityScope
             )
@@ -112,9 +118,12 @@ fun GamesGrid(
     games: List<GameData>,
     innerPadding: PaddingValues,
     onDetailClick: (GameData) -> Unit,
+    onFavoriteClick: (id: Int, name: String, isFavorite: Boolean) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cardsModifier: Modifier = Modifier,
+    animateCards: Boolean = false
 ) {
     var isDataLoaded by rememberSaveable { mutableStateOf(false) }
 
@@ -150,11 +159,22 @@ fun GamesGrid(
                 items = games,
                 key = { game -> game.id }
             ) { game ->
+                val cModifier = if (animateCards) {
+                    cardsModifier.animateItem(
+                        fadeInSpec = tween(300),
+                        fadeOutSpec = tween(300),
+                        placementSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                    )
+                } else {
+                    cardsModifier
+                }
                 GameCard(
                     gameData = game,
                     onCardClick = { onDetailClick(game) },
+                    onFavoriteClick = { onFavoriteClick(game.id, game.title, game.isFavorite) },
                     sharedTransitionScope = sharedTransitionScope,
-                    animatedVisibilityScope = animatedVisibilityScope
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    modifier = cModifier
                 )
             }
         }
@@ -213,6 +233,7 @@ private fun MainScreenPreview() {
                 MainScreenContent(
                     uiState = UiState.Success(sampleGames),
                     onDetailClick = {},
+                    onFavoriteClick = {_, _, _ -> },
                     innerPadding = PaddingValues(0.dp),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this@AnimatedVisibility,

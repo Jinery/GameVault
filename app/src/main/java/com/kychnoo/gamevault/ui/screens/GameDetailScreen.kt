@@ -10,6 +10,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavBackStackEntry
 import coil3.compose.AsyncImage
 import com.kychnoo.gamevault.R
@@ -67,6 +70,8 @@ import com.kychnoo.gamevault.ui.viewModel.GameDetailViewModel
 import com.kychnoo.gamevault.ui.widgets.SharedImageOverlayContainer
 import com.kychnoo.gamevault.ui.widgets.details.GameDescriptionWidget
 import com.kychnoo.gamevault.ui.widgets.development.GameDevelopmentTeamCard
+import com.kychnoo.gamevault.ui.widgets.favorites.BorderedFavoriteButton
+import com.kychnoo.gamevault.ui.widgets.favorites.FavoriteButton
 import com.kychnoo.gamevault.ui.widgets.games.NoSuggestedGamesMessage
 import com.kychnoo.gamevault.ui.widgets.games.SuggestedGamesErrorMessage
 import com.kychnoo.gamevault.ui.widgets.games.SuggestedGamesLoading
@@ -127,6 +132,9 @@ fun GameDetailScreen(
                 viewModel.getSuggestedGames(id)
             },
             onGameDetailClick = onGameDetailClick,
+            onFavoriteClick = { id, gameName, isFavorite ->
+                viewModel.launchToggleFavorite(viewModel.viewModelScope, id, gameName, isFavorite)
+            }
         )
     }
 }
@@ -144,6 +152,7 @@ private fun GameDetailScreenContent(
     onRetryLoadScreenshots: () -> Unit,
     onSuggestedGamesRetryClick: () -> Unit,
     onGameDetailClick: (GameData) -> Unit,
+    onFavoriteClick: (id: Int, gameName: String, isFavorite: Boolean) -> Unit,
     onRetryLoadDevelopmentTeamsInfo: () -> Unit,
 ) {
     val gameDetailState = uiState.gameDetailsState
@@ -266,11 +275,22 @@ private fun GameDetailScreenContent(
                                     animationSpec = tween(300, delayMillis = 100)
                                 )
                             ) {
-                                Text(
-                                    text = gameDetailData.name,
-                                    style = MaterialTheme.typography.headlineLarge,
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = gameDetailData.name,
+                                        style = MaterialTheme.typography.headlineLarge,
+                                        modifier = Modifier.weight(1F)
+                                    )
+                                    FavoriteButton(
+                                        isFavorite = gameDetailData.isFavorite,
+                                        onClick = { onFavoriteClick(id, gameDetailData.name, gameDetailData.isFavorite) },
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
                             }
                         }
                         item(key = "spacer_1") {
@@ -436,6 +456,7 @@ private fun GameDetailScreenContent(
                                             SuggestedGamesRow(
                                                 rowGames = rowGames,
                                                 onDetailClick = onGameDetailClick,
+                                                onFavoriteClick = onFavoriteClick,
                                                 sharedTransitionScope = sharedTransitionScope,
                                                 animatedVisibilityScope = animatedVisibilityScope,
                                                 modifier = Modifier
@@ -482,6 +503,8 @@ private fun GameDetailScreenContent(
                         alpha = backButtonAlpha
                     }
                     .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
                         enabled = backButtonAlpha > 0f,
                         onClick = onBackClick
                     )
@@ -490,6 +513,7 @@ private fun GameDetailScreenContent(
             when (gameDetailState) {
                 /*  Topbar.  */
                 is UiState.Success -> {
+                    val gameDetailData = gameDetailState.data
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -510,14 +534,16 @@ private fun GameDetailScreenContent(
                                 .padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Image(
+                            Icon(
                                 painter = painterResource(R.drawable.ic_back),
                                 contentDescription = "back_button",
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+                                tint = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier
                                     .size(32.dp)
                                     .padding(4.dp)
                                     .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null,
                                         enabled = toolbarAlpha > 0f,
                                         onClick = onBackClick
                                     )
@@ -547,17 +573,25 @@ private fun GameDetailScreenContent(
                             Spacer(Modifier.width(12.dp))
 
                             Text(
-                                text = gameDetailState.data.name,
+                                text = gameDetailData.name,
                                 style = MaterialTheme.typography.titleMedium,
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1F)
+                            )
+
+                            Spacer(Modifier.width(12.dp))
+
+                            FavoriteButton(
+                                isFavorite = gameDetailData.isFavorite,
+                                onClick = { onFavoriteClick(id, gameDetailData.name, gameDetailData.isFavorite) },
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
                 }
 
-                else -> { /*  Pass. Topbar will not be displayed without loaded data.  */
-                }
+                else -> { /*  Pass. Topbar will not be displayed without loaded data.  */ }
             }
         }
     }

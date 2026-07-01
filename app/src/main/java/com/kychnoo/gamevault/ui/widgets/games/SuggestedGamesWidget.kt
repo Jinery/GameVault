@@ -54,6 +54,7 @@ fun SuggestedGamesLoading(modifier: Modifier = Modifier) {
 fun SuggestedGamesRow(
     rowGames: List<GameData>,
     onDetailClick: (GameData) -> Unit,
+    onFavoriteClick: (id: Int, gameName: String, isFavorite: Boolean) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
@@ -67,6 +68,7 @@ fun SuggestedGamesRow(
             GameCard(
                 gameData = game,
                 onCardClick = { onDetailClick(game) },
+                onFavoriteClick = { onFavoriteClick(game.id, game.title, game.isFavorite) },
                 sharedTransitionScope = sharedTransitionScope,
                 animatedVisibilityScope = animatedVisibilityScope,
                 modifier = Modifier.weight(1f)

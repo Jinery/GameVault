@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kychnoo.gamevault.R
 import com.kychnoo.gamevault.data.local.entity.SearchHistoryEntity
+import com.kychnoo.gamevault.data.manager.favorites.FavoritesManager
 import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.data.model.RepResult
 import com.kychnoo.gamevault.data.model.gameFilters.GameFilters
 import com.kychnoo.gamevault.data.model.genres.GenreData
 import com.kychnoo.gamevault.data.model.request.GameSearchParameters
+import com.kychnoo.gamevault.data.model.states.extensions.withFavorites
 import com.kychnoo.gamevault.data.model.ui.UiState
 import com.kychnoo.gamevault.data.model.ui.states.SearchUiState
 import com.kychnoo.gamevault.data.remote.repository.RawgGamesRepository
@@ -27,19 +29,24 @@ class SearchViewModel(
     private val searchRepository: SearchRepository,
     private val gamesRepository: RawgGamesRepository,
     private val genresRepository: RawgGenresRepository,
-    private val resourceProvider: AndroidResourceProvider
-) : ViewModel() {
+    private val resourceProvider: AndroidResourceProvider,
+    favoritesManager: FavoritesManager,
+) : ViewModel(), FavoritesManager by favoritesManager {
     private val _searchQuery = MutableStateFlow("")
     private val _gamesState = MutableStateFlow<UiState<List<GameData>>>(UiState.Success(emptyList()))
     private val _genresState = MutableStateFlow<UiState<List<GenreData>>>(UiState.Loading)
     private val _filtersState = MutableStateFlow(GameFilters())
 
+    private val _gamesFlow: StateFlow<UiState<List<GameData>>> = _gamesState
+        .withFavorites(getFavoriteIds())
+        .stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = UiState.Loading)
+
     val uiState: StateFlow<SearchUiState> = combine(
         _searchQuery,
         searchRepository.observeLast10(),
-        _gamesState,
+        _gamesFlow,
         _genresState,
-        _filtersState
+        _filtersState,
     ) { query, history, games, genres, filters ->
         SearchUiState(
             searchQuery = query,

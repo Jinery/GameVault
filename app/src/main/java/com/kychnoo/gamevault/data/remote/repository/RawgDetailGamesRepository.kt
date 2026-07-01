@@ -5,9 +5,7 @@ import com.kychnoo.gamevault.data.model.RepResult
 import com.kychnoo.gamevault.data.model.gameDetail.GameDetailData
 import com.kychnoo.gamevault.data.remote.api.RawgApi
 import com.kychnoo.gamevault.data.remote.dto.model.GameDetailDto
-import com.kychnoo.gamevault.data.remote.dto.model.toGameDetailData
 import com.kychnoo.gamevault.data.remote.dto.response.ApiResponse
-import com.kychnoo.gamevault.data.remote.dto.response.GameDetailResponse
 import com.kychnoo.gamevault.provider.AndroidResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,7 +15,7 @@ class RawgDetailGamesRepository(private val api: RawgApi, private val resourcePr
         return withContext(Dispatchers.IO) {
             when (val response = api.getGameDetails(gameId)) {
                 is ApiResponse.Success<GameDetailDto> -> {
-                    val details = response.data.toGameDetailData()
+                    val details = response.data.toData()
                     RepResult.Success(details)
                 }
                 is ApiResponse.ApiError -> {

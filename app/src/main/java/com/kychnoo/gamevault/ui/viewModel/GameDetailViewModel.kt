@@ -3,12 +3,14 @@ package com.kychnoo.gamevault.ui.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kychnoo.gamevault.R
+import com.kychnoo.gamevault.data.manager.favorites.FavoritesManager
 import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.data.model.RepResult
 import com.kychnoo.gamevault.data.model.development.DevelopmentTeamPageData
 import com.kychnoo.gamevault.data.model.gameDetail.GameDetailData
 import com.kychnoo.gamevault.data.model.screenshots.ScreenshotData
 import com.kychnoo.gamevault.data.model.ui.UiState
+import com.kychnoo.gamevault.data.model.ui.mapData
 import com.kychnoo.gamevault.data.model.ui.states.GameDetailsUiState
 import com.kychnoo.gamevault.data.remote.repository.RawgDetailGamesRepository
 import com.kychnoo.gamevault.data.remote.repository.RawgDevelopmentTeamsRepository
@@ -16,8 +18,11 @@ import com.kychnoo.gamevault.data.remote.repository.RawgGamesRepository
 import com.kychnoo.gamevault.data.remote.repository.RawgScreenshotsRepository
 import com.kychnoo.gamevault.provider.AndroidResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -26,11 +31,27 @@ class GameDetailViewModel(
     private val gamesRepository: RawgGamesRepository,
     private val screenshotsRepository: RawgScreenshotsRepository,
     private val developmentTeamsRepository: RawgDevelopmentTeamsRepository,
-    private val resourceProvider: AndroidResourceProvider
-) : ViewModel() {
+    private val resourceProvider: AndroidResourceProvider,
+    favoritesManager: FavoritesManager,
+) : ViewModel(), FavoritesManager by favoritesManager {
 
     private val _uiState: MutableStateFlow<GameDetailsUiState> = MutableStateFlow(GameDetailsUiState())
-    val uiState: StateFlow<GameDetailsUiState> = _uiState.asStateFlow()
+
+    val uiState: StateFlow<GameDetailsUiState> = combine(
+        _uiState,
+        getFavoriteIds()
+    ) { state, favoriteIds ->
+        state.copy(
+            gameDetailsState = state.gameDetailsState.mapData { details ->
+                details.copy(isFavorite = favoriteIds.contains(details.id))
+            },
+            suggestedGames = state.suggestedGames.mapData { games ->
+                games.map { game ->
+                    game.copy(isFavorite = favoriteIds.contains(game.id))
+                }
+            }
+        )
+    }.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = GameDetailsUiState())
 
     fun getGameDetails(gameId: Int) {
         val currentDetails = _uiState.value.gameDetailsState

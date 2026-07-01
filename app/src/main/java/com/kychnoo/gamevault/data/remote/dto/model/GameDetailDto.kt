@@ -1,11 +1,13 @@
 package com.kychnoo.gamevault.data.remote.dto.model
 
+import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.data.model.gameDetail.GameDetailData
 import com.kychnoo.gamevault.data.model.platform.toFamily
 import com.kychnoo.gamevault.data.model.reactions.toDomain
 import com.kychnoo.gamevault.data.parser.toLocalDateOrNull
 import com.kychnoo.gamevault.data.remote.dto.model.rating.RatingDto
 import com.kychnoo.gamevault.data.remote.dto.model.rating.toData
+import com.kychnoo.gamevault.data.remote.dto.utils.DtoMapper
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -50,51 +52,64 @@ data class GameDetailDto(
     val game_series_count: Int?,
     val esrb_rating: EsrbRatingDto?,
     val platforms: List<PlatformArDto>
-)
+): DtoMapper<GameDetailData> {
+    override fun toData(): GameDetailData = GameDetailData(
+        id = this.id,
+        slug = this.slug,
+        name = this.name,
+        nameOriginal = name_original,
+        description = this.description,
+        metacritic = this.metacritic,
+        metacriticPlatforms = this.metacritic_platforms.toData(),
+        released = this.released.toLocalDateOrNull(),
+        updated = this.updated.toLocalDateOrNull(),
+        backgroundImage = this.background_image,
+        backgroundImageAdditional = this.background_image_additional,
+        website = this.website,
+        rating = this.rating,
+        ratings = this.ratings.toData(),
+        reactions = this.reactions?.toDomain(),
+        added = this.added,
+        addedByStatus = added_by_status?.toData(),
+        playtime = this.playtime,
+        screenshotsCount = screenshots_count,
+        moviesCount = movies_count,
+        creatorsCount = creators_count,
+        achievementsCount = achievements_count,
+        parentAchievementsCount = parent_achievements_count,
+        redditUrl = reddit_url,
+        redditName = reddit_name,
+        redditDescription = reddit_description,
+        redditLogo = reddit_logo,
+        redditCount = reddit_count,
+        twitchCount = twitch_count,
+        youtubeCount = youtube_count,
+        reviewsTextCount = reviews_text_count,
+        ratingsCount = ratings_count,
+        suggestionsCount = suggestions_count,
+        alternativeNames = alternative_names,
+        metacriticUrl = metacritic_url,
+        parentsCount = parents_count,
+        additionsCount = additions_count,
+        gameSeriesCount = game_series_count,
+        esrbRating = esrb_rating?.toData(),
+        platforms = this.platforms.toData(),
+        platformFamilies = this.platforms
+            .mapNotNull { it.platform.toData().toFamily() }
+            .distinct()
+            .sortedBy { it.ordinal },
+    )
 
-fun GameDetailDto.toGameDetailData() = GameDetailData(
-    id = this.id,
-    slug = this.slug,
-    name = this.name,
-    nameOriginal = name_original,
-    description = this.description,
-    metacritic = this.metacritic,
-    metacriticPlatforms = this.metacritic_platforms.toData(),
-    released = this.released.toLocalDateOrNull(),
-    updated = this.updated.toLocalDateOrNull(),
-    backgroundImage = this.background_image,
-    backgroundImageAdditional = this.background_image_additional,
-    website = this.website,
-    rating = this.rating,
-    ratings = this.ratings.toData(),
-    reactions = this.reactions?.toDomain(),
-    added = this.added,
-    addedByStatus = added_by_status?.toData(),
-    playtime = this.playtime,
-    screenshotsCount = screenshots_count,
-    moviesCount = movies_count,
-    creatorsCount = creators_count,
-    achievementsCount = achievements_count,
-    parentAchievementsCount = parent_achievements_count,
-    redditUrl = reddit_url,
-    redditName = reddit_name,
-    redditDescription = reddit_description,
-    redditLogo = reddit_logo,
-    redditCount = reddit_count,
-    twitchCount = twitch_count,
-    youtubeCount = youtube_count,
-    reviewsTextCount = reviews_text_count,
-    ratingsCount = ratings_count,
-    suggestionsCount = suggestions_count,
-    alternativeNames = alternative_names,
-    metacriticUrl = metacritic_url,
-    parentsCount = parents_count,
-    additionsCount = additions_count,
-    gameSeriesCount = game_series_count,
-    esrbRating = esrb_rating?.toData(),
-    platforms = this.platforms.toData(),
-    platformFamilies = this.platforms
-        .mapNotNull { it.platform.toData().toFamily() }
-        .distinct()
-        .sortedBy { it.ordinal },
-)
+    fun toGameData(): GameData = GameData(
+        id = this.id,
+        title = this.name,
+        imageUrl = this.background_image,
+        score = this.metacritic,
+        rating = this.rating ?: 0F,
+        platforms = this.platforms.toData(),
+        platformFamilies = this.platforms
+            .mapNotNull { it.platform.toData().toFamily() }
+            .distinct()
+            .sortedBy { it.ordinal }
+    )
+}

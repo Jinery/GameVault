@@ -13,11 +13,16 @@ val Pink40 = Color(0xFF7D5260)
 val Snow = Color(0xFFFFFAFA)
 val Whisper = Color (0xFFF2F2F2)
 val SecondaryContainerLight = Color(0xFFE1EBF5)
+
+val Grey100 = Color(0xFFF5F5F5)
+val Grey200 = Color(0xFFEEEEEE)
+
 val SecondaryContainerDark = Color(0xFF1D1E1F)
 
 val Charcoal = Color(0xFF333333)
 val Obsidian = Color(0xFF262626)
 
+val Green600 = Color(0xFF43A047)
 val Green500 = Color(0xFF00FF11)
 val Green400 = Color(0xFF2EFF3B)
 

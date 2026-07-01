@@ -7,7 +7,6 @@ import com.kychnoo.gamevault.data.model.GameData
 import com.kychnoo.gamevault.data.model.RepResult
 import com.kychnoo.gamevault.data.model.request.GameSearchParameters
 import com.kychnoo.gamevault.data.remote.api.RawgApi
-import com.kychnoo.gamevault.data.remote.dto.model.toGameData
 import com.kychnoo.gamevault.data.remote.dto.response.ApiResponse
 import com.kychnoo.gamevault.data.remote.dto.response.GameResponse
 import com.kychnoo.gamevault.provider.AndroidResourceProvider
@@ -41,7 +40,7 @@ class RawgGamesRepository(private val api: RawgApi, private val resourceProvider
     private fun processGameResponse(response: ApiResponse<GameResponse>): RepResult<List<GameData>> {
         return when (response) {
             is ApiResponse.Success -> {
-                val games = response.data.results.map { it.toGameData() }
+                val games = response.data.results.map { it.toData() }
                 RepResult.Success(games)
             }
             is ApiResponse.ApiError -> {

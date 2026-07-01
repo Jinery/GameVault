@@ -15,7 +15,13 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -25,6 +31,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.kychnoo.gamevault.data.manager.snackbar.SnackbarManager
+import com.kychnoo.gamevault.data.model.types.snackbar.SnackbarTypes
+import com.kychnoo.gamevault.ui.screens.FavoriteGamesScreen
+import com.kychnoo.gamevault.ui.screens.FavoritesScreenRoute
 import com.kychnoo.gamevault.ui.screens.GameDetailRoute
 import com.kychnoo.gamevault.ui.screens.GameDetailScreen
 import com.kychnoo.gamevault.ui.screens.MainScreen
@@ -32,7 +42,9 @@ import com.kychnoo.gamevault.ui.screens.MainScreenRoute
 import com.kychnoo.gamevault.ui.screens.SearchScreen
 import com.kychnoo.gamevault.ui.screens.SearchScreenRoute
 import com.kychnoo.gamevault.ui.theme.GameVaultTheme
+import com.kychnoo.gamevault.ui.widgets.MainSnackbar
 import com.kychnoo.gamevault.ui.widgets.bottom.BottomBar
+import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
     private fun getRoutePriority(destination: NavDestination?): Int {
@@ -40,7 +52,8 @@ class MainActivity : ComponentActivity() {
             destination?.hasRoute<MainScreenRoute>() == true -> 0
             destination?.hasRoute<SearchScreenRoute>() == true -> 1
             destination?.hasRoute<GameDetailRoute>() == true -> 2
-            else -> 3
+            destination?.hasRoute<FavoritesScreenRoute>() == true -> 3
+            else -> 4
         }
     }
 
@@ -58,9 +71,30 @@ class MainActivity : ComponentActivity() {
                     val shouldShowBottomBar =
                         currentDestination?.hasRoute<MainScreenRoute>() == true
                                 || currentDestination?.hasRoute<SearchScreenRoute>() == true
+                                || currentDestination?.hasRoute<FavoritesScreenRoute>() == true
+
+                    val snackbarHostState = remember { SnackbarHostState() }
+                    var currentSnackbarType by remember { mutableStateOf(SnackbarTypes.INFO) }
+
+                    val snackbarManager: SnackbarManager = koinInject()
+
+                    LaunchedEffect(Unit) {
+                        snackbarManager.snackbarEvents.collect { event ->
+                            currentSnackbarType = event.type
+                            snackbarHostState.showSnackbar(message = event.message)
+                        }
+                    }
 
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
+                        snackbarHost = {
+                            SnackbarHost(hostState = snackbarHostState) { snackbarData ->
+                                MainSnackbar(
+                                    message = snackbarData.visuals.message,
+                                    type = currentSnackbarType,
+                                )
+                            }
+                        },
                         bottomBar = {
                             AnimatedVisibility(
                                 visible = shouldShowBottomBar,
@@ -169,6 +203,31 @@ class MainActivity : ComponentActivity() {
                                         )
                                     },
                                     innerPadding = innerPadding,
+                                    sharedTransitionScope = this@SharedTransitionLayout,
+                                    animatedVisibilityScope = this@composable,
+                                    backStackEntry = backStackEntry
+                                )
+                            }
+                            composable<FavoritesScreenRoute> { backStackEntry ->
+                                BackHandler {
+                                    navController.navigate(FavoritesScreenRoute) {
+                                        popUpTo(backStackEntry.destination.id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                                FavoriteGamesScreen(
+                                    innerPadding = innerPadding,
+                                    onDetailClick = { game ->
+                                        navController.navigate(
+                                            GameDetailRoute(
+                                                id = game.id,
+                                                imageUrl = game.imageUrl
+                                            )
+                                        )
+                                    },
                                     sharedTransitionScope = this@SharedTransitionLayout,
                                     animatedVisibilityScope = this@composable,
                                     backStackEntry = backStackEntry

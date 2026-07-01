@@ -14,4 +14,7 @@ val ColorScheme.ratingYellow: Color get() = if (isLight()) Yellow500 else Yellow
 
 val ColorScheme.ratingGreen: Color get() = if (isLight()) Green500 else Green400
 
+val ColorScheme.success: Color get() = if (isLight()) Green500 else Green600
+val ColorScheme.info: Color get() = if (isLight()) Grey100 else Grey200
+
 fun ColorScheme.isLight(): Boolean = this.background.luminance() > 0.5f

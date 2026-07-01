@@ -29,6 +29,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.kychnoo.gamevault.R
+import com.kychnoo.gamevault.ui.screens.FavoritesScreenRoute
 import com.kychnoo.gamevault.ui.screens.MainScreenRoute
 import com.kychnoo.gamevault.ui.screens.SearchScreenRoute
 import com.kychnoo.gamevault.ui.theme.bottomMenuColor
@@ -41,7 +42,8 @@ fun BottomBar(navController: NavController) {
     val items = remember {
         listOf(
             NavigationItem(MainScreenRoute, R.string.explore, R.drawable.ic_rocket),
-            NavigationItem(SearchScreenRoute, R.string.search, R.drawable.ic_search)
+            NavigationItem(SearchScreenRoute, R.string.search, R.drawable.ic_search),
+            NavigationItem(FavoritesScreenRoute, R.string.favorites, R.drawable.ic_favorite)
         )
     }
 

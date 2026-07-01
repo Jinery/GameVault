@@ -90,4 +90,10 @@
     <string name="genres_title">Genres</string>
 
     <string name="apply_filters">Apply filters</string>
+
+    <!-- Favorites. -->
+    <string name="no_favorites">You don\'t have any favorite games.</string>
+    <string name="favorites">Favorites</string>
+
+    <string name="failed_to_load_favorites">Failed to load some favorite games: %s</string>"
 </resources>
