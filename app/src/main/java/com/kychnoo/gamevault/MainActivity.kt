@@ -1,5 +1,6 @@
 package com.kychnoo.gamevault
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -23,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -149,6 +151,12 @@ class MainActivity : ComponentActivity() {
                             }
                         ) {
                             composable<MainScreenRoute> {
+                                val context = LocalContext.current
+
+                                BackHandler {
+                                    (context as? Activity)?.finish()
+                                }
+
                                 MainScreen(
                                     onDetailClick = { game ->
                                         navController.navigate(
@@ -210,8 +218,8 @@ class MainActivity : ComponentActivity() {
                             }
                             composable<FavoritesScreenRoute> { backStackEntry ->
                                 BackHandler {
-                                    navController.navigate(FavoritesScreenRoute) {
-                                        popUpTo(backStackEntry.destination.id) {
+                                    navController.navigate(MainScreenRoute) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
                                         launchSingleTop = true

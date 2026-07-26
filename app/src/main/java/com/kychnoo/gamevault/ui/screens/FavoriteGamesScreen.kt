@@ -67,9 +67,6 @@ private fun FavoritesGamesScreenContent(
         when (state) {
             is UiState.Success<List<GameData>> -> {
                 val games = state.data
-                LaunchedEffect(games) {
-                    Log.d("CheckFavoritesGames", games.joinToString(separator = "\n") { it.id.toString() })
-                }
                 if (games.isEmpty()) {
                     Text(
                         text = stringResource(R.string.no_favorites),
